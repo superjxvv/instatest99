@@ -1,12 +1,9 @@
-import React, { useState, useContext } from "react"
+import React, { useState } from "react"
 import { Link, useHistory } from "react-router-dom"
-import { UserContext } from "../../App"
 import M from "materialize-css"
 
-const Login = () => {
-  const { state, dispatch } = useContext(UserContext)
+const Reset = () => {
   const history = useHistory()
-  const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const PostData = () => {
     if (
@@ -17,13 +14,12 @@ const Login = () => {
       M.toast({ html: "invalid email", classes: "#c62828 red darken-3" })
       return
     }
-    fetch("/login", {
+    fetch("/reset-password", {
       method: "post",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        password,
         email
       })
     })
@@ -32,14 +28,11 @@ const Login = () => {
         if (data.error) {
           M.toast({ html: data.error, classes: "#c62828 red darken-3" })
         } else {
-          localStorage.setItem("jwt", data.token)
-          localStorage.setItem("user", JSON.stringify(data.user))
-          dispatch({ type: "USER", payload: data.user })
           M.toast({
-            html: "log in success",
+            html: data.message,
             classes: "#7cb342 light-green darken-1"
           })
-          history.push("/")
+          history.push("/login")
         }
       })
       .catch((err) => {
@@ -57,27 +50,15 @@ const Login = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
-          type="password"
-          placeholder="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
         <button
           className="btn waves-effect waves-light #64b5f6 blue darken-1"
           onClick={() => PostData()}
         >
-          Login
+          Reset password
         </button>
-        <h5>
-          <Link to="/signup">Don't have an account?</Link>
-        </h5>
-        <h6>
-          <Link to="/reset">Forgot password?</Link>
-        </h6>
       </div>
     </div>
   )
 }
 
-export default Login
+export default Reset
